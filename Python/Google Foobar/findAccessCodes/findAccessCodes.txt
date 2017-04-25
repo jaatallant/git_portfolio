@@ -1,0 +1,182 @@
+Find the Access Codes
+
+Write a function answer(l) that takes a list of positive integers l and counts the number of "lucky triples" of (lst[i], lst[j], lst[k]) where i < j < k. The length of l is between 2 and 2000 inclusive. The elements of l are between 1 and 999999 inclusive. The answer fits within a signed 32-bit integer. Some of the lists are purposely generated without any access codes to throw off spies, so if no triples are found, return 0.
+
+For example, [1, 2, 3, 4, 5, 6] has the triples: [1, 2, 4], [1, 2, 6], [1, 3, 6], making the answer 3 total.
+
+Test cases
+
+Inputs: (int list) l = [1, 1, 1] Output: (int) 1
+
+Inputs: (int list) l = [1, 2, 3, 4, 5, 6] Output: (int) 3
+
+===================================================================================
+
+- function 4:
+    + all test cases passed :D
+- function 4:
+    def answer(l):    
+        fwd, rev = [], []
+        for i in range(1, len(l)):
+            fwd.append(sum([1 if (l[i]%l[q]==0) else 0 for q in range(i)]))
+            # fwd lists potential lucky triples going left to right
+            rev.append(sum([1 if (l[q]%l[i]==0) else 0 for q in range(i+1, len(l))]))
+            # rev lists potential lucky triples going from right to left
+
+        print(sum([a*b for a,b in zip(fwd, rev)]))
+        return sum([a*b for a,b in zip(fwd, rev)])
+        # the corresponding values from col and row are multiplied to see
+        # if there are any true lucky triples. false lucky triples will
+        # have 0 values going in one direction and multiplication will cancel
+        # out those values. multiplication accounts for the different
+        # combinations of numbers that arise when considering both the pairs
+        # in the triple.
+
+
+    answer([1,1,1])
+    answer([1,2,3,4,5,6])
+    answer([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
+    answer([1] * 2000)
+
+
+- function 3:
+    + this breaks apart found function 1 based on the insights from function 2.
+    + the values appended to col and row are printed in this version
+        - the breaks in the printing reflect the sums in the final row and col lists
+        - the printed values confirm that the correct math evaluation is being run for lucky triples
+    + the print statements here help to look inside of the for/in comprehension contractions
+- function 3:
+    def answer(l):    
+        col, row = [], []
+        for i in range(1, len(l)):
+            col.append(sum([1 if (l[i]%l[q]==0) else 0 for q in range(i)]))
+            [print(i, q, "| " + str(l[i]) + " % " + str(l[q])) \
+             if (l[i]%l[q]==0) else 0 for q in range(i)]
+            print('-----')
+            # col lists potential lucky triples going left to right
+            row.append(sum([1 if (l[q]%l[i]==0) else 0 for q in range(i+1, len(l))]))
+            [print(i, q, "| " + str(l[q]) + " % " + str(l[i])) \
+             if (l[q]%l[i]==0) else 0 for q in range(i+1, len(l))]
+            # row lists potential lucky triples going from right to left
+            print('=====')
+
+        print(col)
+        print(row)
+        print(sum([a*b for a,b in zip(col, row)]))
+        return sum([a*b for a,b in zip(col, row)])
+        # the corresponding values from col and row are multiplied to see
+        # if there are any true lucky triples. false lucky triples will
+        # have 0 values going in one direction and multiplication will cancel
+        # out those values. multiplication accounts for the different
+        # combinations of numbers that arise when considering both the pairs
+        # in the triple.
+
+
+    #answer([1,1,1])
+    answer([1,2,3,4,5,6])
+    #answer([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
+    #answer([1] * 2000)
+
+- function 2:
+    + All test cases passed
+- function 2:
+    def answer(l):
+            count = 0
+            size = len(l)
+            if size < 3:
+                return 0
+
+            cache = [0] * size
+            for x in range(size):
+                for y in range(x + 1, size):
+                    if l[y] % l[x] == 0:
+                        cache[y] += 1 # cache the count of magic divisions
+                        # for the bigger value from each pair compared
+                        print(cache)
+                        
+                        print("y: " + str(cache[y]) + " x: " + str(cache[x]))
+                        count += cache[x] # retrieve the cache of magic
+                        # divisions from the smaller value from the pair
+                        print("count: " + str(count))
+
+            print(count)
+            return count
+
+    #answer([1,1,1])
+    answer([1,2,3,4,5,6])
+    #answer([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
+    #answer([1] * 2000)
+
+
+- Submission goals:
+    - Review, understand, and refactor found function 2.
+    - Review and try to understand found function 1.
+    - Submit answer
+
+    
+- found function 2:
+    + much easier to read than found function 1
+    + passes all test cases
+- found function 2:
+    def answer(l):
+        count = 0
+        size = len(l)
+        if size < 3: return 0
+
+        cache = [0] * size
+        for x in xrange(size):
+            for y in xrange(x + 1, size):
+                if l[y] % l[x] == 0:
+                    cache[y] += 1
+                    count += cache[x]
+
+        return count
+
+
+- found function 1:
+    + passes all test cases
+    + i'm having a tough time following the logic
+- found function 1:
+    def answer(l):    
+        col, row = [], []
+        for i in range(1, len(l)):
+            col.append(sum([1 if (l[i]%l[q]==0) else 0 for q in range(i)]))
+            row.append(sum([1 if (l[q]%l[i]==0) else 0 for q in range(i+1, len(l))]))
+            
+        return sum([a*b for a,b in zip(col, row)])
+
+
+- function 1:
+    + 'Time limit exceeded' error message
+- function 1:
+    from itertools import combinations
+    # itertools.combinations(iterable, r)
+    # return r length subsequences of elements from the input iterable
+
+    import time
+    from itertools import combinations
+    # itertools.combinations(iterable, r)
+    # return r length subsequences of elements from the input iterable
+
+    def answer(l):
+        gue = []
+        if len(l) < 3:
+            return 0
+        found = 0
+        for val in combinations(l,3):
+            #print(val[0], val[1], val[2])
+            # Ordering Check
+            if (val[0] <= val[1] <= val[2]) != True:
+                continue
+            # Answer Size Check against size of signed integer 32 bit
+            if int(val[0].__str__() + val[1].__str__() + val[2].__str__()) > 2147483647:
+                continue
+            # Division Check
+            if (val[1] % val[0] != 0) or (val[2] % val[1] != 0):
+                continue
+            # Increment 'found' variable by one
+            found += 1
+            gue.append(val)
+        #print(found)
+        #print(gue)
+        return found

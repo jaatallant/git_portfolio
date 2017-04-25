@@ -1,0 +1,485 @@
+Queue To Do
+===========
+
+You're almost ready to make your move to destroy the LAMBCHOP doomsday device, but the security checkpoints that guard the underlying systems of the LAMBCHOP are going to be a problem. You were able to take one down without tripping any alarms, which is great! Except that as Commander Lambda's assistant, you've learned that the checkpoints are about to come under automated review, which means that your sabotage will be discovered and your cover blown - unless you can trick the automated review system.
+
+To trick the system, you'll need to write a program to return the same security checksum that the guards would have after they would have checked all the workers through. Fortunately, Commander Lambda's desire for efficiency won't allow for hours-long lines, so the checkpoint guards have found ways to quicken the pass-through rate. Instead of checking each and every worker coming through, the guards instead go over everyone in line while noting their security IDs, then allow the line to fill back up. Once they've done that they go over the line again, this time leaving off the last worker. They continue doing this, leaving off one more worker from the line each time but recording the security IDs of those they do check, until they skip the entire line, at which point they XOR the IDs of all the workers they noted into a checksum and then take off for lunch. Fortunately, the workers' orderly nature causes them to always line up in numerical order without any gaps.
+
+For example, if the first worker in line has ID 0 and the security checkpoint line holds three workers, the process would look like this:
+0 1 2 /
+3 4 / 5
+6 / 7 8
+where the guards' XOR (^) checksum is 0^1^2^3^4^6 == 2.
+
+Likewise, if the first worker has ID 17 and the checkpoint holds four workers, the process would look like:
+17 18 19 20 /
+21 22 23 / 24
+25 26 / 27 28
+29 / 30 31 32
+which produces the checksum 17^18^19^20^21^22^23^25^26^29 == 14.
+
+All worker IDs (including the first worker) are between 0 and 2000000000 inclusive, and the checkpoint line will always be at least 1 worker long.
+
+With this information, write a function answer(start, length) that will cover for the missing security checkpoint by outputting the same checksum the guards would normally submit before lunch. You have just enough time to find out the ID of the first worker to be checked (start) and the length of the line (length) before the automatic review occurs, so your program must generate the proper checksum with just those two values.
+
+Languages
+=========
+
+To provide a Python solution, edit solution.py
+To provide a Java solution, edit solution.java
+
+Test cases
+==========
+
+Inputs:
+    (int) start = 0
+    (int) length = 3
+Output:
+    (int) 2
+
+Inputs:
+    (int) start = 17
+    (int) length = 4
+Output:
+    (int) 14
+
+==================================================================================
+
+- function 10:
+	+ 'All test cases passed.' Woo!!! :D
+	+ The issue with functions 8 and 9 was simple: I was double-counting the start value in most of my arithmetic before doing XORs over my checksums.
+		- I removed the extra calls to the start variable since they were messing up the math, and the le and fe variable already incorporated the start value appropriately.
+- function 10:
+	def answer(start, length):
+		    result = 0
+		    if start % 2 == 0:
+		        for i in xrange(length, 0, -1):
+		            fe = start+(length*(length-i)) # first elegible element of that row
+		            le = start+(length*(length-i))+(i-1) # last elegible element of that row
+		            if i % 4 == 1:
+		                result ^= le
+		            elif i % 4 == 2:
+		                if length % 2 == 0:
+		                    result ^= 1
+		                else:
+		                    result ^= le ^ fe
+		            elif i % 4 == 3:
+		                result ^= le ^ 1
+		            else:
+		                if length % 2 == 1:
+		                    result ^= le ^ fe ^ 1
+		    else:
+		        for i in xrange(length, 0, -1):
+		            fe = start+(length*(length-i)) # first elegible element of that row
+		            le = start+(length*(length-i))+(i-1) # last elegible element of that row
+		            if i % 4 == 1:
+		                result ^= fe
+		            elif i % 4 == 2:
+		                if length % 2 == 1:
+		                    result ^= 1
+		                else:
+		                    result ^= le ^ fe
+		            elif i % 4 == 3:
+		                result ^= fe ^ 1
+		            else:
+		                if length % 2 == 0:
+		                    result ^= le ^ fe ^ 1
+		    print(result)
+		    return result
+
+
+	answer(0, 3)
+	answer(17, 4)
+	answer(17, 6)
+	answer(17, 8)
+	answer(17, 5)
+	answer(2, 6)
+	answer(2, 5)
+	#answer(2000000000, 1)
+	#answer(2000000000, 500000000)
+
+
+- function 9:
+	- Tests 1 through 3 of 10 tests passed!
+- function 9:
+	def answer(start, length):
+	    result = 0
+	    if start % 2 == 0:
+	        for i in xrange(length, 0, -1):
+	            fe = start+(length*(length-i)) # first elegible element of that row
+	            le = start+(length*(length-i))+(i-1) # last elegible element of that row
+	            if i % 4 == 1:
+	                result ^= (le + start)
+	            elif i % 4 == 2:
+	                if length % 2 == 0:
+	                    result ^= 1
+	                else:
+	                    result ^= (le + start) ^ (fe + start)
+	            elif i % 4 == 3:
+	                result ^= le ^ 1
+	            else:
+	                if length % 2 == 1:
+	                    result ^= (le + start) ^ (fe) ^ 1
+	    else:
+	        for i in xrange(length, 0, -1):
+	            fe = start+(length*(length-i)) # first elegible element of that row
+	            le = start+(length*(length-i))+(i-1) # last elegible element of that row
+	            if i % 4 == 1:
+	                result ^= (fe + start)
+	            elif i % 4 == 2:
+	                if length % 2 == 1:
+	                    result ^= 1
+	                else:
+	                    result ^= (le + start) ^ (fe + start)
+	            elif i % 4 == 3:
+	                result ^= (fe + start) ^ 1
+	            else:
+	                if length % 2 == 0:
+	                    result ^= (le + start) ^ (fe + start) ^ 1
+	    print(result)
+	    return result
+
+
+	answer(0, 3)
+	answer(17, 4)
+	#answer(17, 6)
+	#answer(17, 8)
+	#answer(17, 5)
+	#answer(2, 6)
+	#answer(2, 5)
+	#answer(2000000000, 1)
+	#answer(2000000000, 500000000)
+
+
+- function 8:
+	+ After working with the figures in queueToDo2.txt and the printed results of function 7 I expanded the prints to show the values of the first and last elements per each of my nodes.
+	+ I used the figures and the prints to figure out the formulas for the first and last elements and then stored them in their own variables.
+- function 8:
+	def answer(start, length):
+	    result = 0
+	    if start % 2 == 0:
+	        for i in xrange(length, 0, -1):
+	            fe = start+(length*(length-i)) # first elegible element of that row
+	            le = start+(length*(length-i))+(i-1) # last elegible element of that row
+	            if i % 4 == 1:
+	                result ^= (le + start)
+	                print("node 1e i: " + str(i) + " le: " + str(le))
+	            elif i % 4 == 2:
+	                if length % 2 == 0:
+	                    result ^= 1
+	                    print("node 2 i: " + str(i))
+	                else:
+	                    result ^= (le + start) ^ (fe + start)
+	                    print("node 2e i: " + str(i) + " fe: " + str(fe) + " le: " + str(le))
+	            elif i % 4 == 3:
+	                result ^= le ^ 1
+	                print("node 3e i: " + str(i) + " le: " + str(le))
+	            else:
+	                if length % 2 == 1:
+	                    result ^= (le + start) ^ (fe) ^ 1
+	                    print("node 4e i: " + str(i) + " fe: " + str(fe) + " le: " + str(le))
+	                print("node x i: " + str(i))
+	    else:
+	        for i in xrange(length, 0, -1):
+	            fe = start+(length*(length-i)) # first elegible element of that row
+	            le = start+(length*(length-i))+(i-1) # last elegible element of that row
+	            if i % 4 == 1:
+	                result ^= (fe + start)
+	                print("node 1o i: " + str(i) + " fe: " + str(fe))
+	            elif i % 4 == 2:
+	                if length % 2 == 1:
+	                    result ^= 1
+	                    print("node 7 i: " + str(i))
+	                else:
+	                    result ^= (le + start) ^ (fe + start)
+	                    print("node 2o i: " + str(i) + " fe: " + str(fe) + " le: " + str(le))
+	            elif i % 4 == 3:
+	                result ^= (fe + start) ^ 1
+	                print("node 3o i: " + str(i) + " fe: " + str(fe))
+	            else:
+	                if length % 2 == 0:
+	                    result ^= (le + start) ^ (fe + start) ^ 1
+	                    print("node 4o i: " + str(i) + " fe: " + str(fe) + " le: " + str(le))
+	                print("node y i: " + str(i))
+	    print("final result: " + str(result))
+	    print("=====")
+	    return result
+
+
+	answer(0, 3)
+	answer(17, 4)
+	#answer(17, 6)
+	#answer(17, 8)
+	#answer(17, 5)
+	#answer(2, 6)
+	#answer(2, 5)
+	#answer(2000000000, 1)
+	#answer(2000000000, 500000000)
+
+
+- function 7:
+	+ Never mind the parts that I have tried to decode from function 6 so far.
+	+ This function prints nodes and i values for my own reference and they reflect the reproducible four-step pattern of nodes that are run however many (length) times based on whether the start value is odd or even.
+- function 7:
+	def answer(start, length):
+	    result = 0
+	    if start % 2 == 0:
+	        for i in xrange(length, 0, -1):
+	            if i % 4 == 1:
+	                result ^= ((length * (i + 1)) + i + start)
+	                print("node 1 i: " + str(i))
+	            elif i % 4 == 2:
+	                if length % 2 == 0:
+	                    result ^= 1
+	                    print("node 2 i: " + str(i))
+	                else:
+	                    result ^= (length - i + start) ^ (length + start)
+	                    print("node 3 i: " + str(i))
+	            elif i % 4 == 3:
+	                result ^= (i + start) ^ 1
+	                print("node 4 i: " + str(i))
+	            else:
+	                if length % 2 == 1:
+	                    #result ^= ('last_elegible_element_of_that_row' + start) ^ ('first_elegible_element_of_that_row') ^ 1
+	                    print("node 5 i: " + str(i))
+	    else:
+	        for i in xrange(length, 0, -1):
+	            if i % 4 == 1:
+	                #result ^= ('first_elegible_element_of_that_row' + start)
+	                print("node 6 i: " + str(i))
+	            elif i % 4 == 2:
+	                if length % 2 == 1:
+	                    result ^= 1
+	                    print("node 7 i: " + str(i))
+	                else:
+	                    #result ^= ('last_elegible_element_of_that_row' + start) ^ ('first_elegible_element_of_that_row' + start)
+	                    print("node 8 i: " + str(i))
+	            elif i % 4 == 3:
+	                #result ^= ('first_elegible_element_of_that_row' + start) ^ 1
+	                print("node 9 i: " + str(i))
+	            else:
+	                if length % 2 == 0:
+	                    #result ^= ('last_elegible_element_of_that_row' + start) ^ ('first_elegible_element_of_that_row' + start) ^ 1
+	                    print("node 10 i: " + str(i))
+	    print("result " + str(result))
+	    return result
+
+
+	answer(0, 3)
+	answer(17, 4)
+	answer(12, 5)
+	answer(13, 6)
+	answer(14, 7)
+	answer(15, 8)
+	answer(16, 9)
+	answer(17, 10)
+	#answer(2000000000, 1)
+	#answer(2000000000, 500000000)
+
+
+- function 6:
+	+ After function 5 didn't work I read over a comment from Keyur Golani who emphasized the following facts:
+		- Each even-odd number pair in that order will XOR to 1
+		- Each pair of 1s will XOR to 0
+		- Each 0 results can be ignored because anything XORed with 0 will be 'anything' itself
+	+ After failing to figure out the necessary formulas to inject into Keyur's code I broke it apart into function 6 for my own comprehension.
+- function 6:
+	def answer(start, length):
+	    result = 0
+	    if start % 2 == 0:
+	        for i in xrange(length, 0, -1):
+	            if i % 4 == 1:
+	                #result ^= ('last_elegible_element_of_that_row' + start)
+	                print(1)
+	            elif i % 4 == 2:
+	                if length % 2 == 0:
+	                    #result ^= 1
+	                    print(2)
+	                else:
+	                    #result ^= ('last_elegible_element_of_that_row' + start) ^ ('first_elegible_element_of_that_row' + start)
+	                    print(3)
+	            elif i % 4 == 3:
+	                result ^= (i + start) ^ 1
+	                print(4)
+	            else:
+	                if length % 2 == 1:
+	                    #result ^= ('last_elegible_element_of_that_row' + start) ^ ('first_elegible_element_of_that_row') ^ 1
+	                    print(5)
+	    else:
+	        for i in xrange(length, 0, -1):
+	            if i % 4 == 1:
+	                #result ^= ('first_elegible_element_of_that_row' + start)
+	                print(6)
+	            elif i % 4 == 2:
+	                if length % 2 == 1:
+	                    #result ^= 1
+	                    print(7)
+	                else:
+	                    #result ^= ('last_elegible_element_of_that_row' + start) ^ ('first_elegible_element_of_that_row' + start)
+	                    print(8)
+	            elif i % 4 == 3:
+	                #result ^= ('first_elegible_element_of_that_row' + start) ^ 1
+	                print(9)
+	            else:
+	                if length % 2 == 0:
+	                    #result ^= ('last_elegible_element_of_that_row' + start) ^ ('first_elegible_element_of_that_row' + start) ^ 1
+	                    print(10)
+	    print("result " + str(result))
+	    return result
+
+
+	answer(0, 3)
+	#answer(17, 4)
+	#answer(2000000000, 1)
+	#answer(2000000000, 500000000)
+
+
+- function 5:
+	- 'Time limit exceeded'
+- function 5:
+	import operator
+
+	def answer(start, length):
+	    checksum = 0
+	    for i, begin in enumerate(xrange(start, start + length * length, length)):
+	        checksum ^= reduce(operator.xor, xrange(begin, begin + length - i), 0)
+	    
+	    print(checksum)
+	    return checksum
+
+
+	answer(0, 3)
+	#answer(17, 4)
+
+
+- function 4:
+	+ The first step in changing the code to Mathias Ettinger's idea: "A more interesting change could be to modify the starting ID rather than the length of the queue as we go".
+	+ The printed results for i from the xrange below are 0, 3, 6, 0. This makes sense since the range is being incremented in steps equal to the length (= 3). In the next step these will become the starting points for each round of lambda security ID checks since they will be the begin values in the enumerate object.
+	+ A reminder that it's length * length to generate all of those 9 values (0 to 8 inclusive) that represent IDs screened after the start person.
+- function 4:
+	import operator
+
+	def answer(start, length):
+	    checksum = 0
+	    for i in xrange(start, start + length * length, length):
+	        print(i)
+	    
+	    print(checksum)
+	    return checksum
+
+
+	answer(0, 3)
+	#answer(17, 4)
+
+
+- function 3:
+	+ Mathias Ettinger's improvements on roflcopterV's code with my prints to help figure out what's going on under the hood
+	+ 'Time limit exceeded'
+- function 3:
+	import operator
+
+	def answer(start, length):
+	    checksum = 0
+	    for size in xrange(length, 0, -1):
+	        checksum ^= reduce(operator.xor, xrange(start, start + size), 0)
+	        start += length
+	        print("starter ID " + str(start))
+	        print("(line) length " + str(length))
+	        print("size " + str(size))
+	        print("checksum " + str(checksum))
+	        print("=======")
+	    print(checksum)
+	    return checksum
+
+
+	answer(0, 3)
+	#answer(17, 4)
+
+
+- function 2:
+	+ my understanding of roflcopterV's code, broken apart with prints
+- function 2:
+	import operator
+
+	def answer(start, length):
+	    checksum = reduce(operator.xor, xrange(start, start+length), 0)
+	    i = 0
+	    while length > 0:
+	        start += length + i
+	        print("starter ID " + str(start))
+	        length -= 1
+	        print("(line) length " + str(length))
+	        i += 1
+	        print("i " + str(i))
+	        checksum ^= reduce(operator.xor, xrange(start, start+length), 0)
+	        print("checksum " + str(checksum))
+	        print("=======")
+	    print(checksum)
+	    return checksum
+
+
+	answer(0, 3)
+	#answer(17, 4)
+
+
+- found function 2:
+	+ 'Time limit exceeded'
+	+ xrange() is used since it does not store a sequential list but a special object. This helps it run fast for larger sets of bigger numbers!
+	+ reduce() is a python 2 function that was removed in python 3 since for loops serve the same purpose and were deemed more readable.
+- found function 2:
+	import operator
+
+	def answer(start, length):
+	    checksum = reduce(operator.xor, xrange(start, start+length), 0)
+	    i = 0
+	    while length > 0:
+	        start += length + i
+	        length -= 1
+	        i += 1
+	        checksum ^= reduce(operator.xor, xrange(start, start+length), 0)
+	    return checksum
+
+
+- found function 1:
+	+ this function could provide some insights into problem-solving
+	+ this function fails the test due to 'Time limit exceeded'
+- found function 1:
+	def answer(start, length):
+	    checksum = None
+	    i = 0
+	    while length > 0:
+	        sublength = length
+	        while sublength > 0:
+	            if checksum:
+	                checksum ^= start
+	            else:
+	                checksum = start
+	            start += 1
+	            sublength -= 1
+	        length -= 1
+	        start += i
+	        i += 1
+	    return checksum
+
+
+- function 1:
+	+ this begins to set up tuples that match the lines evaluated in the readme.txt outline of the logic.
+- function 1:
+	def answer(start, length):
+	    libs = list(range(start, length * length))
+	    it = [iter(libs)] * length
+	    tng = length
+	    spt = []
+
+	    fdr = zip(*it)
+	    
+	    for i in fdr:
+	        print(i)
+
+	    for index, item in enumerate(fdr):
+	        spt.append(index)
+	    
+	    print(spt)
+
+	answer(0, 3)
+	#answer(17, 4)

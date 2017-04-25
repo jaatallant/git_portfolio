@@ -1,0 +1,240 @@
+foo.bar
+Numbers Station Coded Messages Planning
+
+Challenge:
+Numbers Station Coded Messages
+==============================
+
+When you went undercover in Commander Lambda's organization, you set up a coded messaging system with Bunny Headquarters to allow them to send you important mission updates. Now that you're here and promoted to Henchman, you need to make sure you can receive those messages - but since you need to sneak them past Commander Lambda's spies, it won't be easy!
+
+Bunny HQ has secretly taken control of two of the galaxy's more obscure numbers stations, and will use them to broadcast lists of numbers. They've given you a numerical key, and their messages will be encrypted within the first sequence of numbers that adds up to that key within any given list of numbers. 
+
+Given a non-empty list of positive integers l and a target positive integer t, write a function answer(l, t) which verifies if there is at least one consecutive sequence of positive integers within the list l (i.e. a contiguous sub-list) that can be summed up to the given target positive integer t (the key) and returns the lexicographically smallest list containing the smallest start and end indexes where this sequence can be found, or returns the array [-1, -1] in the case that there is no such sequence (to throw off Lambda's spies, not all number broadcasts will contain a coded message).
+
+For example, given the broadcast list l as [4, 3, 5, 7, 8] and the key t as 12, the function answer(l, t) would return the list [0, 2] because the list l contains the sub-list [4, 3, 5] starting at index 0 and ending at index 2, for which 4 + 3 + 5 = 12, even though there is a shorter sequence that happens later in the list (5 + 7). On the other hand, given the list l as [1, 2, 3, 4] and the key t as 15, the function answer(l, t) would return [-1, -1] because there is no sub-list of list l that can be summed up to the given target value t = 15.
+
+To help you identify the coded broadcasts, Bunny HQ has agreed to the following standards: 
+
+- Each list l will contain at least 1 element but never more than 100.
+- Each element of l will be between 1 and 100.
+- t will be a positive integer, not exceeding 250.
+- The first element of the list l has index 0. 
+- For the list returned by answer(l, t), the start index must be equal or smaller than the end index. 
+
+Remember, to throw off Lambda's spies, Bunny HQ might include more than one contiguous sublist of a number broadcast that can be summed up to the key. You know that the message will always be hidden in the first sublist that sums up to the key, so answer(l, t) should only return that sublist.
+
+Languages
+=========
+
+To provide a Python solution, edit solution.py
+To provide a Java solution, edit solution.java
+
+Test cases
+==========
+
+Inputs:
+    (int list) l = [4, 3, 10, 2, 8]
+    (int) t = 12
+Output:
+    (int list) [2, 3]
+
+Inputs:
+    (int list) l = [1, 2, 3, 4]
+    (int) t = 15
+Output:
+    (int list) [-1, -1]
+
+
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+
+
+
+- Function 6:
+	+ Passes all 5 test cases :D
+	+ This harkens back to that len(l) <= 3 nonsense in Function 4.
+		- The problem with that code was that didn't actually address the problem.
+		- The problem was that for situations like answer([1,2,3], 6) and answer([1,2,3,4], 10) the value returned was [-1, -1]. The function wasn't looking to see if the whole array summed up to the t value.
+		- I adjusted the code to handle any case where the logic caused a +1/-1 shift between the sum of values and returning of keys.
+- Function 6:
+	def answer(l,t):
+	    for i, v in enumerate(l):
+	        for i2, v2 in enumerate(l):
+	            print("v: " + str(v) + " v2: " + str(v2))
+	            if sum(l[i:i2]) == t:
+	                print([i, i2])
+	                return [i, i2 - 1]
+	            elif sum(l[i:i2 + 1]) == t:
+	                print([0, i2])
+	                return [i, i2]
+	    print([-1, -1])
+	    return [-1, -1]
+- Function 5:
+	+ Passes tests 1, 2, 3, and 4 of 5 tests.
+- Function 5:
+	def answer(l,t):
+	    for i, v in enumerate(l):
+	        for i2, v2 in enumerate(l):
+	            if sum(l[i:i2]) == t:
+	                print([i, i2])
+	                return [i, i2 - 1]
+	    print([-1, -1])
+	    return [-1, -1]
+
+
+- Found Function 2:
+	+ Passes tests 1, 2, 3, and 4 of 5 tests.
+	+ The only thing that seems broken in this bare-bones version is that answer([1,2,3], 6) returns [-1, -1]. This points to a bigger patch for these sorts of cases than the bits in Function 4.
+- Found function 2:
+	def answer(l, t):
+	    for index1, value1 in enumerate(l):
+	        for index2, value2 in enumerate(l):
+	            if sum(l[index1:index2]) == t:
+	                return [index1, index2 -1]
+
+	    return [-1, -1]
+
+
+- Function 4:
+	+ Passes tests 1, 2, 3, and 4 of 5 tests.
+- Function 4:
+	def answer(l,t):
+	    sumfix = 0 # this adjusts the sum value for calc
+	    retfix = -1 # this adjusts the index value for return
+	    if len(l) <= 3:
+	        sumfix = 1
+	        retfix = 0
+	    for i, v in enumerate(l):
+	        for i2, v2 in enumerate(l):
+	            if sum(l[i:i2 + sumfix]) == t:
+	                print([i, i2 + retfix])
+	                return [i, i2 + retfix]
+	    if t in l:
+	        print([l.index(t),l.index(t)])
+	        return [l.index(t),l.index(t)]
+	    print([-1, -1])
+	    return [-1, -1]
+
+
+- Found function 1:
+	+ Passes tests 1, 2, 3, and 4 of 5 tests.
+	+ Differs from my Function 3 and passes test 4 because it can read sequences longer than two or three values to see if they can equal t.
+	+ The nested enumerate object loops iterate through each index with a nested iteration over each index.
+		- The result is effectively that you iterate through each pair of range values in the [low number, high number] pairing sense, which can be seen by printing/returning [i, i2] within the loop.
+- Found function 1:
+	def answer(l, t):
+		#because indexes are usally -1 of the end index in a slice:
+		forgive1 = 0
+		forgive2 = -1
+		#but if the length of a list is <=3:
+		if len(l)<=3:
+		    forgive1 = 1
+		    forgive2 = 0
+		for i, v in enumerate(l):
+		    for i2, v2 in enumerate(l):
+		        if sum(l[i:i2+forgive1]) == t:
+		            return [i, i2 +forgive2]
+		if t in l:
+		    return [l.index(t),l.index(t)]
+		return [-1, -1]
+
+
+- Test answers:
+	+ Test 1 is return [2, 3]
+	+ Test 2 is return [-1, -1]
+
+
+- Function 3:
+	+ Passes tests 1, 2, and 4 of 5 tests.
+- Function 3:
+	def answer(l,t):
+	    abr = enumerate(l)
+	    new = 0
+	    fin = []
+	    le = 0
+	    prv = 0
+	    prk = 0
+	    drv = 0
+	    for k, v in abr:
+	        if t == new:
+	            le = 1
+	            break
+	        else:
+	            new += v
+	            fin.append(k)
+	    if le == 0:
+	        orb = enumerate(l)
+	        for k, v in orb:
+	            dino = v + prv
+	            fin = []
+	            if dino == t:
+	                fin.append(prk)
+	                fin.append(k)
+	                le = 1
+	                print([fin[0], fin[-1]])
+	                return [fin[0], fin[-1]]
+	            else:
+	                rud = v + prv + drv
+	                if rud == t:
+	                    fin.append(prk)
+	                    fin.append(k)
+	                    print([fin[0], fin[-1]])
+	                    return [fin[0], fin[-1]]
+	                    le = 1
+	                drv = prv
+	            prv = v
+	            prk = k
+	        if le == 0:
+	            print([-1, -1])
+	            return [-1, -1]
+	    else:
+	        print([fin[0], fin[-1]])
+	        return [fin[0], fin[-1]]
+
+
+- Function 2:
+	+ Passes tests 2 and 4 of 5 tests.
+- Function 2:
+	def answer(l,t):
+	    abr = enumerate(l)
+	    new = 0
+	    fin = []
+	    le = 0
+	    for k, v in abr:
+	        if t == new:
+	            le = 1
+	            break
+	        else:
+	            new += v
+	            fin.append(k)
+	            print(new, k)
+	    if le == 0:
+	        return [-1, -1]
+	    else:
+	        return [fin[0], fin[-1]]
+	        
+
+- Function 1 is not on the right track.
+	+ What's wrong with it?
+		- It sums up all the integers in the array until they are NOT less than t.
+		- It creates an array of all the integers from the original l array that added up to t.
+	+ What should it do?
+		- It should be able to look through a 100 element array and be able to pick out particular short sequences that sum up to t.
+		- Maintain the element keys from the original array with values that add up to t.
+- Function 1:
+	def answer(l,t):
+	    new = 0
+	    fin = []
+	    le = len(l)
+	    for i in l:
+	        if t > new:
+	            new += i
+	            fin.append(i)
+	            print(new, i)
+	        else:
+	            break
+	    print(fin)
+	    print(t)
+
+	answer([4,3,5,7,8], 12)
